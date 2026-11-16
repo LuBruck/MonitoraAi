@@ -1,0 +1,12 @@
+{
+  "name": "monitoraai",
+  "version": "0.1.0",
+  "description": "Cadastro e consulta de monitorias da faculdade",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
