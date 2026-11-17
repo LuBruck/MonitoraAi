@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MonitoraAí — Monitorias da semana</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topo">
+    <h1>Monitora<span>Aí</span></h1>
+    <p>Encontre e cadastre monitorias da faculdade em um só lugar.</p>
+  </header>
+
+  <main class="conteudo">
+    <section class="card" aria-labelledby="titulo-cadastro">
+      <h2 id="titulo-cadastro">Cadastrar monitoria</h2>
+
+      <form id="form-monitoria" novalidate>
+        <label>Disciplina
+          <input type="text" name="disciplina" placeholder="Ex.: Cálculo I" maxlength="60" />
+        </label>
+
+        <label>Monitor(a)
+          <input type="text" name="monitor" placeholder="Ex.: Ana Souza" maxlength="60" />
+        </label>
+
+        <label>Dia
+          <select name="dia" id="campo-dia">
+            <option value="">Selecione…</option>
+          </select>
+        </label>
+
+        <div class="linha">
+          <label>Início
+            <input type="time" name="inicio" />
+          </label>
+          <label>Fim
+            <input type="time" name="fim" />
+          </label>
+        </div>
+
+        <label>Local
+          <select name="local" id="campo-local">
+            <option value="">Selecione…</option>
+          </select>
+        </label>
+
+        <ul id="erros" class="erros" role="alert" hidden></ul>
+        <p id="sucesso" class="sucesso" role="status" hidden></p>
+
+        <button type="submit">Cadastrar</button>
+      </form>
+    </section>
+
+    <section class="card grade-card" aria-labelledby="titulo-grade">
+      <div class="grade-topo">
+        <h2 id="titulo-grade">Monitorias da semana</h2>
+        <input type="search" id="busca" placeholder="Buscar por disciplina…" aria-label="Buscar por disciplina" />
+      </div>
+      <p id="contador" class="contador"></p>
+      <div id="grade" class="grade"></div>
+    </section>
+  </main>
+
+  <footer class="rodape">MonitoraAí · Gerência de Configuração e Manutenção de Software</footer>
+
+  <script src="js/monitorias.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
