@@ -1,0 +1,48 @@
+# Pipeline do MonitoraAí
+# Fase 3: CI (build + testes). O job de publicação (CD) entra na Fase 4.
+name: CI/CD
+
+on:
+  # Todo push, em qualquer branch, roda o CI (feedback rápido para quem está desenvolvendo)
+  push:
+    branches: ['**']
+  # Todo Pull Request para a main roda o CI antes do merge
+  pull_request:
+    branches: [main]
+  # Permite rodar manualmente pela aba Actions
+  workflow_dispatch:
+
+# O CI só precisa ler o código
+permissions:
+  contents: read
+
+jobs:
+  build-e-testes:
+    name: Build e testes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v7
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências (exatamente as do package-lock.json)
+        run: npm ci
+
+      - name: Build (gera dist/ e verifica arquivos)
+        run: npm run build
+
+      - name: Testes automatizados (Jest)
+        run: npm test -- --ci
+
+      - name: Guardar o build como artefato
+        uses: actions/upload-artifact@v7
+        with:
+          name: monitoraai-${{ github.sha }}
+          path: dist/
+          retention-days: 30
