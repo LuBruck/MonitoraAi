@@ -4,6 +4,7 @@
   "description": "Cadastro e consulta de monitorias da faculdade",
   "private": true,
   "scripts": {
+    "build": "node scripts/build.js",
     "test": "jest"
   },
   "devDependencies": {
