@@ -76,7 +76,11 @@
     return { valido: erros.length === 0, erros };
   }
 
-  /** Dois intervalos se sobrepõem se um começa antes do outro terminar (e vice-versa). */
+  /**
+   * Dois intervalos se sobrepõem se um começa antes do outro terminar (e vice-versa).
+   * Usa "<" e não "<=": uma monitoria que termina às 12:00 NÃO conflita com outra
+   * que começa às 12:00 na mesma sala (horários encostados são permitidos).
+   */
   function horariosSeSobrepoem(a, b) {
     return (
       horaParaMinutos(a.inicio) < horaParaMinutos(b.fim) &&
