@@ -114,8 +114,34 @@
 
   campoBusca.addEventListener('input', renderizar);
 
+  // ---------- Versão publicada (rastreabilidade) ----------
+  // O build grava version.json com a versão e o commit; aqui mostramos no rodapé.
+  async function mostrarVersao() {
+    const alvo = document.getElementById('versao');
+    try {
+      const resposta = await fetch('version.json', { cache: 'no-store' });
+      if (!resposta.ok) throw new Error('sem version.json');
+      const info = await resposta.json();
+      const commitCurto = String(info.commit).slice(0, 7);
+
+      alvo.textContent = `v${info.versao} · commit `;
+      if (info.commitUrl) {
+        const link = el('a', null, commitCurto);
+        link.href = info.commitUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        alvo.appendChild(link);
+      } else {
+        alvo.appendChild(document.createTextNode(commitCurto));
+      }
+    } catch {
+      alvo.textContent = 'versão de desenvolvimento';
+    }
+  }
+
   // ---------- Inicialização ----------
   preencherSelect(campoDia, DIAS_SEMANA);
   preencherSelect(campoLocal, SALAS);
   renderizar();
+  mostrarVersao();
 })();
