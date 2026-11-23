@@ -1,9 +1,14 @@
 # Pipeline do MonitoraAí
-# Fase 3: CI (build + testes). O job de publicação (CD) entra na Fase 4.
+#
+#   Build e testes ──► Entrega ──► Publicação (GitHub Pages)
+#        (CI)            (CD)         (só na main + aprovação manual)
+#
+# Se "Build e testes" falhar, os jobs seguintes são pulados (skipped):
+# nenhuma versão com teste quebrando é empacotada nem publicada.
 name: CI/CD
 
 on:
-  # Todo push, em qualquer branch, roda o CI (feedback rápido para quem está desenvolvendo)
+  # Todo push, em qualquer branch, roda o CI
   push:
     branches: ['**']
   # Todo Pull Request para a main roda o CI antes do merge
@@ -12,14 +17,16 @@ on:
   # Permite rodar manualmente pela aba Actions
   workflow_dispatch:
 
-# O CI só precisa ler o código
+# Permissão padrão mínima: só leitura do código
 permissions:
   contents: read
 
 jobs:
+  # ---------------------------------------------------------------- CI
   build-e-testes:
     name: Build e testes
-    runs-on: ubuntu-latest
+    # Versão fixa do sistema: o ambiente do pipeline não muda sem a equipe saber
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Baixar o código do repositório
@@ -46,3 +53,50 @@ jobs:
           name: monitoraai-${{ github.sha }}
           path: dist/
           retention-days: 30
+
+  # ---------------------------------------------------------------- CD: entrega
+  entrega:
+    name: Entrega (prepara versão para publicação)
+    needs: build-e-testes          # só roda se o CI passou
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Baixar o build validado pelo CI
+        uses: actions/download-artifact@v8
+        with:
+          name: monitoraai-${{ github.sha }}
+          path: dist/
+
+      - name: Empacotar o build no formato do GitHub Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist/
+
+  # ---------------------------------------------------------------- CD: publicação
+  publicacao:
+    name: Publicação (GitHub Pages)
+    needs: entrega                 # só roda se a entrega foi preparada
+    # Publica apenas a partir da main (push/merge ou execução manual)
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+
+    # O ambiente "github-pages" tem revisor obrigatório:
+    # o job fica "Waiting" até alguém aprovar (Continuous Delivery).
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    # Só este job recebe permissão para publicar
+    permissions:
+      pages: write
+      id-token: write
+
+    # Evita duas publicações ao mesmo tempo
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Publicar no GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v5
