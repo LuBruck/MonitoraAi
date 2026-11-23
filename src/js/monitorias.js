@@ -79,8 +79,8 @@
   /** Dois intervalos se sobrepõem se um começa antes do outro terminar (e vice-versa). */
   function horariosSeSobrepoem(a, b) {
     return (
-      horaParaMinutos(a.inicio) < horaParaMinutos(b.fim) &&
-      horaParaMinutos(b.inicio) < horaParaMinutos(a.fim)
+      horaParaMinutos(a.inicio) <= horaParaMinutos(b.fim) &&
+      horaParaMinutos(b.inicio) <= horaParaMinutos(a.fim)
     );
   }
 
