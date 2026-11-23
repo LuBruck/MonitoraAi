@@ -50,13 +50,15 @@ console.log(`🔗 ${referencias.length} referências do index.html verificadas`)
 
 // 5. Rastreabilidade
 const { version } = require(path.join(RAIZ, 'package.json'));
+const repoUrl = process.env.GITHUB_REPOSITORY
+  ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
+  : null;
 const info = {
   versao: version,
   commit: process.env.GITHUB_SHA || 'local',
+  commitUrl: repoUrl && process.env.GITHUB_SHA ? `${repoUrl}/commit/${process.env.GITHUB_SHA}` : null,
   branch: process.env.GITHUB_REF_NAME || 'local',
-  execucao: process.env.GITHUB_RUN_ID
-    ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
-    : null,
+  execucao: repoUrl && process.env.GITHUB_RUN_ID ? `${repoUrl}/actions/runs/${process.env.GITHUB_RUN_ID}` : null,
   geradoEm: new Date().toISOString(),
 };
 fs.writeFileSync(path.join(DIST, 'version.json'), JSON.stringify(info, null, 2));
